@@ -48,21 +48,41 @@ def get_embedding(text: str, model: str = "text-embedding-3-small") -> list:
     return response.data[0].embedding
 
 
-# def cosine_similarity(vec1: list, vec2: list) -> float:
+def cosine_similarity(vec1: list, vec2: list) -> float:
+    """
+    Formula: cosine_similarity = (A . B) / (||A|| * ||B||)
+    where:
+    - A . B is the dot product of vectors A and B
+    - ||A|| is the magnitude (length) of vector A
+    - ||B|| is the magnitude (length) of vector B
+    """
+    a = np.array(vec1)
+    b = np.array(vec2)
 
+    dot_product = np.dot(a, b)
+    magnitude_a = np.linalg.norm(a)
+    magnitude_b = np.linalg.norm(b)
+
+    if magnitude_a == 0 or magnitude_b == 0:
+        return 0.0
     
-#     return dot_product / (magnitude_a * magnitude_b)
+    return dot_product / (magnitude_a * magnitude_b)
 
 
-# def create_embeddings_cache(knowledge_base: dict) -> dict:
+def create_embeddings_cache(knowledge_base: dict) -> dict:
 
-#     print("\n" + "="*70)
-#     print("STEP 2: Creating embeddings for all documents")
-#     print("="*70)
-#     print("Converting each document to a 1536-dimensional vector...\n")
+    print("\n" + "="*70)
+    print("STEP 2: Creating embeddings for all documents")
+    print("="*70)
+    print("Converting each document to a 1536-dimensional vector...\n")
 
+    embeddings_cache = {}
 
-#     return embeddings_cache
+    for doc_name, content in knowledge_base.items():
+        #print(f"Creating embedding for '{doc_name}'...")
+        embeddings_cache[doc_name] = get_embedding(content)
+
+    return embeddings_cache
 
 
 # def semantic_search(query: str, knowledge_base: dict, embeddings_cache: dict, top_k: int = 2) -> list:
@@ -90,6 +110,8 @@ def main():
     knowledge_base = load_knowledge_base()
 
     #print(knowledge_base["office_locations"])
+
+    create_embeddings_cache(knowledge_base)
 
 if __name__ == "__main__":
     main()
